@@ -1,0 +1,28 @@
+{{!
+    @template block_jsinjection/settings_display
+
+    Load settings table
+
+}}
+
+
+<table class="table table-bordered sth-sticky settings-table">
+    <thead>
+        <tr>
+            <th scope="col">School</th>
+            <th scope="col">Identifier</th>
+            <th scope="col">Author</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#settings}}
+         <tr class="tablerow tablerow-{{categoryid}}">
+             <td>{{category}}</td>
+             <td>{{datatype}}</td>
+             <td>{{user}}</td>
+             <td><button class="btn btn-primary removesetting" type="button" data-categoryid="{{categoryid}}">Remove setting</button></td>
+         </tr>
+        {{/settings}}
+    </tbody>
+</table>
