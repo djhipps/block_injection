@@ -66,10 +66,6 @@ class block_jsinjection extends block_base
             return $this->content;
         }
 
-//        if($this->_hide_this_block_on_multiple_instances($this->instance->id, $context)){
-//            return $this->content;
-//        }
-
         if ($this->content !== null) {
             return $this->content;
         }
@@ -105,79 +101,6 @@ class block_jsinjection extends block_base
         return $this->content;
     }
 
-    /**
-     * @param $blockinstance
-     * @return array|bool
-     *
-     */
-    public function get_datatype_setting_for_block($blockinstance){
-            global $DB;
-
-            try {
-                $sql = "SELECT bqbc.datatype FROM {block_instances} bi
-                        JOIN {context} ctx ON bi.parentcontextid = ctx.id
-                        JOIN {block_jsinjection_conf} bqbc ON ctx.instanceid = bqbc.categoryid
-                        WHERE bi.id = ? AND ctx.contextlevel = 40";
-                $params = array($blockinstance);
-                return $DB->get_records_sql($sql, $params);
-            } catch (\dml_exception $dml_exception){
-            }
-            return false;
-
-    }
-
-
-    /**
-     * This function determines if there are multiple blocks in the same context
-     * and decides which to display based on precedence rules
-     * 1. if added to course explicity
-     * 2. if deeper in category path than all others
-     * 3. lowest depth in cat path
-     * @param $blockinstance
-     * @param $context
-     * @return bool
-     */
-    private function _hide_this_block_on_multiple_instances($blockinstance, $context){
-           if($results = $this->_get_all_jsinjection_blocks()){
-               $instances = [];
-               foreach ($results as $result) {
-                   //this should filter out instances in the cm context only
-                   if(substr($context->path, 0, strlen($result->path) +1) === $result->path . '/'){
-                       $instances[$result->blockinstanceid] = $result;
-                   }
-               }
-               if(!empty($instances)){
-                   //get deepest
-                   uasort($instances, function($a, $b) {
-                       return $b->depth <=> $a->depth;
-                   });
-                   $deepest = array_shift($instances);
-                   if($deepest->blockinstanceid === $blockinstance) {
-                       return false;
-                   }
-               }
-           }
-           return true;
-    }
-
-    /**
-     * @return array|bool
-     */
-    private function _get_all_jsinjection_blocks(){
-        global $DB;
-
-        try {
-            $sql = "SELECT bi.id AS blockinstanceid, ctx.path, ctx.depth, if(bqbc.id IS NULL,0,1) AS inconf
-                    FROM mdl_block_instances bi
-                    JOIN mdl_context ctx ON bi.parentcontextid = ctx.id
-                    LEFT JOIN mdl_block_jsinjection_conf bqbc ON ctx.instanceid = bqbc.categoryid
-                    WHERE  blockname = 'jsinjection'";
-            return $DB->get_records_sql($sql);
-
-        } catch (\dml_exception $dml_exception){
-        }
-        return false;
-    }
 
 
 }

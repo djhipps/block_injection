@@ -10,6 +10,6 @@ defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
 
-    $settings = new admin_externalpage('block_jsinjection', get_string('pluginname', 'block_jsinjection'), $CFG->wwwroot . '/blocks/jsinjection/advancedsettings.php');
+   // add setting here
 
 }
